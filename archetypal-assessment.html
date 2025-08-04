@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Archetype Assessment</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      background: #fff;
+      margin: 30px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .question {
+      margin-bottom: 25px;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    select {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background-color: #007bff;
+      color: #fff;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      display: block;
+      margin: 30px auto 0;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 40px;
+      padding: 20px;
+      border-radius: 10px;
+      background: #e8f0fe;
+      border: 1px solid #c0d6ff;
+    }
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    ul li {
+      padding: 4px 0;
+    }
+    #progress {
+      text-align: center;
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Archetype Assessment</h1>
+    <p id="progress">Question 0 of 45 answered</p>
+    <form id="quizForm">
+      <div id="questionsContainer"></div>
+      <button type="submit">Submit</button>
+    </form>
+    <div id="results" class="result" style="display:none;"></div>
+  </div>
+
+  <script>
+    const questionsData = [
+      // Provider: Merchant
+      { text: "I often see business opportunities that others overlook.", archetype: "Merchant" },
+      { text: "I enjoy negotiating and finding win-win deals.", archetype: "Merchant" },
+      { text: "I measure success by how much value I can create, not just what I earn.", archetype: "Merchant" },
+      { text: "I enjoy connecting people with things they need.", archetype: "Merchant" },
+      { text: "I can quickly assess the worth of a product, service, or idea.", archetype: "Merchant" },
+
+      // Artisan
+      { text: "I feel most alive when I’m creating or building something with skill.", archetype: "Artisan" },
+      { text: "I lose track of time when perfecting a craft or project.", archetype: "Artisan" },
+      { text: "I strive for excellence even when no one else is watching.", archetype: "Artisan" },
+      { text: "I prefer producing something tangible over managing people.", archetype: "Artisan" },
+      { text: "I'm deeply motivated by the idea of leaving behind lasting work.", archetype: "Artisan" },
+
+      // Steward
+      { text: "I feel a deep responsibility to manage money, time, or resources well.", archetype: "Steward" },
+      { text: "I plan for the long term, often thinking years into the future.", archetype: "Steward" },
+      { text: "I'm careful about waste and value sustainability.", archetype: "Steward" },
+      { text: "People trust me to take care of what matters most.", archetype: "Steward" },
+      { text: "I often think in terms of legacy and what I’ll leave behind.", archetype: "Steward" },
+
+      // Warrior
+      { text: "I stand up quickly when someone is being mistreated.", archetype: "Warrior" },
+      { text: "I don’t shy away from confrontation when it’s needed.", archetype: "Warrior" },
+      { text: "I’m driven by a sense of honor and justice.", archetype: "Warrior" },
+      { text: "I would risk myself to protect those I care about.", archetype: "Warrior" },
+      { text: "I often feel a calling to face difficult challenges head-on.", archetype: "Warrior" },
+
+      // Sentinel
+      { text: "I notice small details others often miss.", archetype: "Sentinel" },
+      { text: "I feel uneasy if I’m not aware of what’s happening around me.", archetype: "Sentinel" },
+      { text: "I tend to anticipate problems before they happen.", archetype: "Sentinel" },
+      { text: "I’m often the one reminding others to lock the door, check the plan, or think ahead.", archetype: "Sentinel" },
+      { text: "I feel most secure when I know everything is in its place.", archetype: "Sentinel" },
+
+      // Strategist
+      { text: "I enjoy solving complex problems with a plan.", archetype: "Strategist" },
+      { text: "I often think several moves ahead in both life and work.", archetype: "Strategist" },
+      { text: "I'm able to detach emotionally to make the best decision.", archetype: "Strategist" },
+      { text: "I analyze risks before taking action.", archetype: "Strategist" },
+      { text: "I enjoy outsmarting obstacles rather than overpowering them.", archetype: "Strategist" },
+
+      // Diplomat
+      { text: "I often serve as the mediator in conflict.", archetype: "Diplomat" },
+      { text: "I find it easy to empathize with different viewpoints.", archetype: "Diplomat" },
+      { text: "I focus on building harmony, even in tense situations.", archetype: "Diplomat" },
+      { text: "I value unity more than being right.", archetype: "Diplomat" },
+      { text: "I can often calm tensions through conversation.", archetype: "Diplomat" },
+
+      // Noble
+      { text: "I feel a strong sense of duty to lead with integrity.", archetype: "Noble" },
+      { text: "I would rather lose with honor than win through dishonesty.", archetype: "Noble" },
+      { text: "I aim to be a moral example for others.", archetype: "Noble" },
+      { text: "I often put others' needs above my own out of principle.", archetype: "Noble" },
+      { text: "I feel called to serve something greater than myself.", archetype: "Noble" },
+
+      // Elder
+      { text: "I enjoy mentoring others through my experience.", archetype: "Elder" },
+      { text: "I value wisdom over cleverness or speed.", archetype: "Elder" },
+      { text: "People often come to me for advice.", archetype: "Elder" },
+      { text: "I take satisfaction in helping others grow.", archetype: "Elder" },
+      { text: "I believe passing on knowledge is a sacred duty.", archetype: "Elder" }
+    ];
+
+    const shuffle = (array) => array.sort(() => Math.random() - 0.5);
+
+    const container = document.getElementById("questionsContainer");
+    const progressText = document.getElementById("progress");
+    const shuffledQuestions = shuffle([...questionsData]);
+
+    shuffledQuestions.forEach((q, index) => {
+      const qId = `q${index}`;
+      container.innerHTML += `
+        <div class="question">
+          <label for="${qId}">${index + 1}. ${q.text}</label>
+          <select id="${qId}" data-archetype="${q.archetype}" onchange="updateProgress()" required>
+            <option value="">--Select--</option>
+            <option value="1">1 - Strongly Disagree</option>
+            <option value="2">2 - Disagree</option>
+            <option value="3">3 - Neutral</option>
+            <option value="4">4 - Agree</option>
+            <option value="5">5 - Strongly Agree</option>
+          </select>
+        </div>`;
+    });
+
+    function updateProgress() {
+      const total = 45;
+      const answered = [...document.querySelectorAll("select")].filter(s => s.value !== "").length;
+      progressText.textContent = `Question ${answered} of ${total} answered`;
+    }
+
+    document.getElementById("quizForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const inputs = document.querySelectorAll("select");
+      const scores = {};
+      const counts = {};
+
+      for (let input of inputs) {
+        const value = Number(input.value);
+        const type = input.dataset.archetype;
+        if (!value) return alert("Please answer all questions.");
+
+        scores[type] = (scores[type] || 0) + value;
+        counts[type] = (counts[type] || 0) + 1;
+      }
+
+      const averages = {};
+      for (let key in scores) {
+        averages[key] = scores[key] / counts[key];
+      }
+
+      const triads = {
+        Provider: (averages.Merchant + averages.Artisan + averages.Steward) / 3,
+        Protector: (averages.Warrior + averages.Sentinel + averages.Strategist) / 3,
+        Presider: (averages.Diplomat + averages.Noble + averages.Elder) / 3
+      };
+
+      let output = "<h2>Results</h2><strong>Archetypes:</strong><ul>";
+      for (let type in averages) {
+        output += `<li>${type}: ${averages[type].toFixed(2)}</li>`;
+      }
+      output += "</ul><strong>Triads:</strong><ul>";
+      for (let t in triads) {
+        output += `<li>${t}: ${triads[t].toFixed(2)}</li>`;
+      }
+      output += "</ul>";
+
+      const resultDiv = document.getElementById("results");
+      resultDiv.innerHTML = output;
+      resultDiv.style.display = "block";
+      window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+    });
+  </script>
+</body>
+</html>
